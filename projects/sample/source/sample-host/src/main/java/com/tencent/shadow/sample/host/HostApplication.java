@@ -40,6 +40,8 @@ public class HostApplication extends Application {
 
     private PluginManager mPluginManager;
 
+    private PluginManager mPluginManager2;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -87,8 +89,18 @@ public class HostApplication extends Application {
         }
     }
 
+    public void loadPluginManager2(File apk) {
+        if (mPluginManager2 == null) {
+            mPluginManager2 = Shadow.getPluginManager(apk);
+        }
+    }
+
     public PluginManager getPluginManager() {
         return mPluginManager;
+    }
+
+    public PluginManager getPluginManager2() {
+        return mPluginManager2;
     }
 
     private static boolean isProcess(Context context, String processName) {

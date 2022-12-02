@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tencent.shadow.dynamic.host.EnterCallback;
+import com.tencent.shadow.dynamic.host.PluginManager;
 import com.tencent.shadow.sample.constant.Constant;
 
 
@@ -51,35 +52,48 @@ public class PluginLoadActivity extends Activity {
         PluginHelper.getInstance().singlePool.execute(new Runnable() {
             @Override
             public void run() {
+
+                String guideFilePath = AssertUtils.loadAssetsToCache(PluginLoadActivity.this, "plugin-guide.zip");
+
+                String partKey = getIntent().getStringExtra(Constant.KEY_PLUGIN_PART_KEY);
+
                 HostApplication.getApp().loadPluginManager(PluginHelper.getInstance().pluginManagerFile);
-
+                HostApplication.getApp().loadPluginManager2(PluginHelper.getInstance().pluginManagerFile);
+                PluginManager pluginManager;
                 Bundle bundle = new Bundle();
-                bundle.putString(Constant.KEY_PLUGIN_ZIP_PATH, PluginHelper.getInstance().pluginZipFile.getAbsolutePath());
-                bundle.putString(Constant.KEY_PLUGIN_PART_KEY, getIntent().getStringExtra(Constant.KEY_PLUGIN_PART_KEY));
-                bundle.putString(Constant.KEY_ACTIVITY_CLASSNAME, getIntent().getStringExtra(Constant.KEY_ACTIVITY_CLASSNAME));
+                if (Constant.PART_KEY_PLUGIN_ANOTHER_APP.equals(partKey)) {
+                    pluginManager = HostApplication.getApp().getPluginManager2();
+                    bundle.putString(Constant.KEY_PLUGIN_ZIP_PATH, guideFilePath);
+                    bundle.putString(Constant.KEY_PLUGIN_PART_KEY, "guide");
+                    bundle.putString(Constant.KEY_ACTIVITY_CLASSNAME, "com.sample.plugin.guide.activity.GuideVideoActivity");
+                } else {
+                    pluginManager = HostApplication.getApp().getPluginManager();
+                    bundle.putString(Constant.KEY_PLUGIN_ZIP_PATH, PluginHelper.getInstance().pluginZipFile.getAbsolutePath());
+                    bundle.putString(Constant.KEY_PLUGIN_PART_KEY, getIntent().getStringExtra(Constant.KEY_PLUGIN_PART_KEY));
+                    bundle.putString(Constant.KEY_ACTIVITY_CLASSNAME, getIntent().getStringExtra(Constant.KEY_ACTIVITY_CLASSNAME));
+                }
 
-                HostApplication.getApp().getPluginManager()
-                        .enter(PluginLoadActivity.this, Constant.FROM_ID_START_ACTIVITY, bundle, new EnterCallback() {
+                pluginManager.enter(PluginLoadActivity.this, Constant.FROM_ID_START_ACTIVITY, bundle, new EnterCallback() {
+                    @Override
+                    public void onShowLoadingView(final View view) {
+                        mHandler.post(new Runnable() {
                             @Override
-                            public void onShowLoadingView(final View view) {
-                                mHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mViewGroup.addView(view);
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCloseLoadingView() {
-                                finish();
-                            }
-
-                            @Override
-                            public void onEnterComplete() {
-
+                            public void run() {
+                                mViewGroup.addView(view);
                             }
                         });
+                    }
+
+                    @Override
+                    public void onCloseLoadingView() {
+                        finish();
+                    }
+
+                    @Override
+                    public void onEnterComplete() {
+
+                    }
+                });
             }
         });
     }

@@ -28,7 +28,7 @@ import com.tencent.shadow.core.manager.installplugin.InstalledPlugin;
 import com.tencent.shadow.core.manager.installplugin.InstalledType;
 import com.tencent.shadow.core.manager.installplugin.PluginConfig;
 import com.tencent.shadow.dynamic.host.FailedException;
-import com.tencent.shadow.dynamic.manager.PluginManagerThatUseDynamicLoader;
+import com.tencent.shadow.dynamic.manager.PluginManagerThatSupportMultiLoader;
 
 import org.json.JSONException;
 
@@ -46,7 +46,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoader {
+public abstract class FastPluginManager extends PluginManagerThatSupportMultiLoader {
 
     private static final Logger mLogger = LoggerFactory.getLogger(FastPluginManager.class);
 

@@ -18,7 +18,6 @@
 
 package com.tencent.shadow.sample.manager;
 
-import static com.tencent.shadow.sample.constant.Constant.PART_KEY_PLUGIN_ANOTHER_APP;
 import static com.tencent.shadow.sample.constant.Constant.PART_KEY_PLUGIN_BASE;
 import static com.tencent.shadow.sample.constant.Constant.PART_KEY_PLUGIN_MAIN_APP;
 
@@ -42,10 +41,16 @@ public class SamplePluginManager extends FastPluginManager {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private Context mCurrentContext;
+    private String pluginKey="pluginKey";
 
     public SamplePluginManager(Context context) {
         super(context);
         mCurrentContext = context;
+    }
+
+    @Override
+    public String getPluginKey() {
+        return pluginKey;
     }
 
     /**
@@ -61,16 +66,18 @@ public class SamplePluginManager extends FastPluginManager {
      */
     @Override
     protected String getPluginProcessServiceName(String partKey) {
-        if (PART_KEY_PLUGIN_MAIN_APP.equals(partKey)) {
-            return "com.tencent.shadow.sample.host.PluginProcessPPS";
-        } else if (PART_KEY_PLUGIN_BASE.equals(partKey)) {
-            return "com.tencent.shadow.sample.host.PluginProcessPPS";
-        } else if (PART_KEY_PLUGIN_ANOTHER_APP.equals(partKey)) {
-            return "com.tencent.shadow.sample.host.Plugin2ProcessPPS";//在这里支持多个插件
-        } else {
-            //如果有默认PPS，可用return代替throw
-            throw new IllegalArgumentException("unexpected plugin load request: " + partKey);
-        }
+        pluginKey = partKey;
+        return "com.tencent.shadow.sample.host.MultiLoaderProcessService";
+//        if (PART_KEY_PLUGIN_MAIN_APP.equals(partKey)) {
+//            return "com.tencent.shadow.sample.host.PluginProcessPPS";
+//        } else if (PART_KEY_PLUGIN_BASE.equals(partKey)) {
+//            return "com.tencent.shadow.sample.host.PluginProcessPPS";
+//        } else if (PART_KEY_PLUGIN_ANOTHER_APP.equals(partKey)) {
+//            return "com.tencent.shadow.sample.host.Plugin2ProcessPPS";//在这里支持多个插件
+//        } else {
+//            //如果有默认PPS，可用return代替throw
+//            throw new IllegalArgumentException("unexpected plugin load request: " + partKey);
+//        }
     }
 
     @Override
@@ -121,11 +128,14 @@ public class SamplePluginManager extends FastPluginManager {
             public void run() {
                 try {
                     InstalledPlugin installedPlugin = installPlugin(pluginZipPath, null, true);
-
-                    loadPlugin(installedPlugin.UUID, PART_KEY_PLUGIN_BASE);
-                    loadPlugin(installedPlugin.UUID, PART_KEY_PLUGIN_MAIN_APP);
-                    callApplicationOnCreate(PART_KEY_PLUGIN_BASE);
-                    callApplicationOnCreate(PART_KEY_PLUGIN_MAIN_APP);
+                    if ("guide".equals(partKey)) {
+                        loadPlugin(installedPlugin.UUID, "guide");
+                    } else {
+                        loadPlugin(installedPlugin.UUID, PART_KEY_PLUGIN_BASE);
+                        loadPlugin(installedPlugin.UUID, PART_KEY_PLUGIN_MAIN_APP);
+                        callApplicationOnCreate(PART_KEY_PLUGIN_BASE);
+                        callApplicationOnCreate(PART_KEY_PLUGIN_MAIN_APP);
+                    }
 
                     Intent pluginIntent = new Intent();
                     pluginIntent.setClassName(
