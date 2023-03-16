@@ -33,6 +33,8 @@ import android.widget.TextView;
 import com.tencent.shadow.sample.constant.Constant;
 import com.tencent.shadow.sample.host.plugin_view.HostAddPluginViewActivity;
 
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
 
 public class MainActivity extends Activity {
 
@@ -98,6 +100,10 @@ public class MainActivity extends Activity {
         rootView.addView(startHostAddPluginViewActivityButton);
 
         setContentView(rootView);
+
+        IjkMediaPlayer ijkMediaPlayer=new IjkMediaPlayer();
+
+
 
     }
 

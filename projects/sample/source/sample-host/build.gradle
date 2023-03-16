@@ -9,6 +9,9 @@ android {
         versionCode project.VERSION_CODE
         versionName project.VERSION_NAME
         testInstrumentationRunner "com.tencent.shadow.test.CustomAndroidJUnitRunner"
+        ndk{
+            setAbiFilters(["arm64-v8a"])
+        }
     }
     buildTypes {
         debug {
@@ -17,7 +20,7 @@ android {
         }
 
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             signingConfig signingConfigs.create("release")
@@ -33,6 +36,10 @@ android {
             assets.srcDir('build/generated/assets/sample-manager/release/')
             assets.srcDir('build/generated/assets/plugin-zip/release/')
         }
+        main{
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+
     }
     lintOptions {
         checkReleaseBuilds false
@@ -49,6 +56,11 @@ dependencies {
     implementation project(':sample-constant')
     implementation project(':sample-host-lib')
     implementation 'com.tencent.shadow.dynamic:dynamic-host-multi-loader-ext'
+
+    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
+
+    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
 }
 
 def createCopyTask(projectName, buildType, name, apkName, inputFile, taskName) {

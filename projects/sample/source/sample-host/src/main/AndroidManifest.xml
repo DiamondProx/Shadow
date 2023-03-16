@@ -9,6 +9,7 @@
         android:name="com.tencent.shadow.sample.host.HostApplication"
         android:theme="@android:style/Theme.DeviceDefault"
         android:usesCleartextTraffic="true"
+        tools:replace="android:label"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="com.tencent.shadow.sample.host.MainActivity">
             <intent-filter>
@@ -35,7 +36,7 @@
             android:process=":plugin2" />
 
         <service
-            android:name="com.tencent.shadow.sample.host.MultiLoaderProcessService" />
+            android:name="com.tencent.shadow.sample.host.MultiLoaderProcessService"  />
 
         <activity
             android:name="com.tencent.shadow.sample.host.PluginLoadActivity"
